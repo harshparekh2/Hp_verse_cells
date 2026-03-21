@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Product } from '@/store/productStore'
+import { Product } from '@/lib/productsSeed'
 import { ShoppingCart, ShieldCheck } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import { formatINR } from '@/lib/utils'

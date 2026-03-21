@@ -1,7 +1,8 @@
 'use client'
 
 import { useAdminStore } from '@/store/adminStore'
-import { useProductStore, Product } from '@/store/productStore'
+import { useProductStore } from '@/store/productStore'
+import { Product } from '@/lib/productsSeed'
 import { useOrderStore, Order } from '@/store/orderStore'
 import { useRouter } from 'next/navigation'
 import { LogOut, Plus, Edit, Trash2, Package, ShoppingCart, Users, TrendingUp, X, Image as ImageIcon, Eye } from 'lucide-react'
@@ -12,7 +13,7 @@ export default function AdminDashboardPage() {
   const isLoggedIn = useAdminStore((state) => state.isLoggedIn)
   const admin = useAdminStore((state) => state.admin)
   const logout = useAdminStore((state) => state.logout)
-  const { products, addProduct, updateProduct, deleteProduct } = useProductStore()
+  const { products, addProduct, updateProduct, deleteProduct, loadProducts } = useProductStore()
   const { orders, updateOrderStatus, deleteOrder } = useOrderStore()
   const router = useRouter()
   
@@ -27,7 +28,7 @@ export default function AdminDashboardPage() {
     name: '',
     brand: '',
     price: 0,
-    images: ['/icon.svg'],
+    images: ['/assets/icons/icon.svg'],
     specs: [],
     description: '',
     inStock: true,
@@ -43,27 +44,31 @@ export default function AdminDashboardPage() {
   const MAX_IMAGES = 6
   const MAX_FILE_SIZE_MB = 10
 
-  const [uploadedImages, setUploadedImages] = useState<string[]>(['/icon.svg'])
+  const [uploadedImages, setUploadedImages] = useState<string[]>(['/assets/icons/icon.svg'])
   const [imageError, setImageError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   /** One line per bullet on product page “Key specifications” */
   const [specsText, setSpecsText] = useState('')
 
-  const readFileAsDataUrl = (file: File) =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(String(reader.result))
-      reader.onerror = () => reject(new Error('Failed to read image file'))
-      reader.readAsDataURL(file)
-    })
+  const uploadImage = async (file: File, productName: string) => {
+    const payload = new FormData()
+    payload.append('file', file)
+    payload.append('productName', productName || 'product')
+    const res = await fetch('/api/upload', { method: 'POST', body: payload })
+    if (!res.ok) throw new Error('Upload failed')
+    const data = (await res.json()) as { url: string }
+    return data.url
+  }
 
   // Redirect if not logged in and handle hydration
   useEffect(() => {
     setIsHydrated(true)
     if (!isLoggedIn) {
       router.push('/admin')
+      return
     }
-  }, [isLoggedIn, router])
+    loadProducts()
+  }, [isLoggedIn, router, loadProducts])
 
   if (!isHydrated) return null
 
@@ -78,7 +83,7 @@ export default function AdminDashboardPage() {
       name: '',
       brand: '',
       price: 0,
-      images: ['/icon.svg'],
+      images: ['/assets/icons/icon.svg'],
       specs: [],
       description: '',
       inStock: true,
@@ -90,7 +95,7 @@ export default function AdminDashboardPage() {
       ram: '',
       stockQuantity: 1
     })
-    setUploadedImages(['/icon.svg'])
+    setUploadedImages(['/assets/icons/icon.svg'])
     setImageError(null)
     setSpecsText('')
     setIsModalOpen(true)
@@ -106,7 +111,7 @@ export default function AdminDashboardPage() {
       ram: product.ram ?? '',
       stockQuantity: Number(product.stockQuantity ?? (product.inStock ? 1 : 0)),
     })
-    setUploadedImages(product.images?.length ? product.images : ['/icon.svg'])
+    setUploadedImages(product.images?.length ? product.images : ['/assets/icons/icon.svg'])
     setImageError(null)
     setSpecsText((product.specs ?? []).join('\n'))
     setIsModalOpen(true)
@@ -122,17 +127,21 @@ export default function AdminDashboardPage() {
       return
     }
 
-    const nonPlaceholder = uploadedImages.filter((img) => img !== '/icon.svg')
-    const newImageUrls = await Promise.all(files.map(readFileAsDataUrl))
-    const merged = [...nonPlaceholder, ...newImageUrls].slice(0, MAX_IMAGES)
-    const finalImages = merged.length ? merged : ['/icon.svg']
-    setUploadedImages(finalImages)
-    setFormData((prev) => ({ ...prev, images: finalImages }))
+    try {
+      const nonPlaceholder = uploadedImages.filter((img) => img !== '/assets/icons/icon.svg')
+      const newImageUrls = await Promise.all(files.map((file) => uploadImage(file, formData.name)))
+      const merged = [...nonPlaceholder, ...newImageUrls].slice(0, MAX_IMAGES)
+      const finalImages = merged.length ? merged : ['/assets/icons/icon.svg']
+      setUploadedImages(finalImages)
+      setFormData((prev) => ({ ...prev, images: finalImages }))
+    } catch {
+      setImageError('Could not upload image. Please try again.')
+    }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const submissionImages = uploadedImages?.length ? uploadedImages : ['/icon.svg']
+    const submissionImages = uploadedImages?.length ? uploadedImages : ['/assets/icons/icon.svg']
     const specs = specsText
       .split('\n')
       .map((line) => line.trim())
@@ -146,12 +155,16 @@ export default function AdminDashboardPage() {
       inStock: normalizedStock > 0,
     }
     
-    if (editingProduct) {
-      updateProduct(editingProduct.id, submissionData)
-    } else {
-      addProduct(submissionData)
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, submissionData)
+      } else {
+        await addProduct(submissionData)
+      }
+      setIsModalOpen(false)
+    } catch {
+      setImageError('Could not save product. Please try again.')
     }
-    setIsModalOpen(false)
   }
 
   const stats = [
@@ -343,7 +356,7 @@ export default function AdminDashboardPage() {
                       Add More Photos
                     </button>
                     <span className="text-xs text-muted-foreground">
-                      {uploadedImages.filter((img) => img !== '/icon.svg').length}/{MAX_IMAGES} photos
+                      {uploadedImages.filter((img) => img !== '/assets/icons/icon.svg').length}/{MAX_IMAGES} photos
                     </span>
                   </div>
 
@@ -356,7 +369,7 @@ export default function AdminDashboardPage() {
                           className="absolute top-1 right-1 p-1 rounded bg-background/80 backdrop-blur border border-border hover:bg-background"
                           onClick={() => {
                             const next = uploadedImages.filter((_, i) => i !== idx)
-                            const final = next.length ? next : ['/icon.svg']
+                            const final = next.length ? next : ['/assets/icons/icon.svg']
                             setUploadedImages(final)
                             setFormData((prev) => ({ ...prev, images: final }))
                           }}
@@ -372,7 +385,7 @@ export default function AdminDashboardPage() {
                     <p className="text-xs text-destructive mt-1">{imageError}</p>
                   ) : (
                     <p className="text-[10px] text-muted-foreground italic mt-1">
-                      Images are stored in your browser (localStorage). Up to {MAX_IMAGES} photos.
+                      Images are uploaded to shared server assets. Up to {MAX_IMAGES} photos.
                     </p>
                   )}
 
@@ -380,8 +393,8 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        setUploadedImages(['/icon.svg'])
-                        setFormData((prev) => ({ ...prev, images: ['/icon.svg'] }))
+                        setUploadedImages(['/assets/icons/icon.svg'])
+                        setFormData((prev) => ({ ...prev, images: ['/assets/icons/icon.svg'] }))
                         setImageError(null)
                       }}
                       className="px-3 py-2 border border-border rounded-lg hover:bg-muted text-sm"
@@ -592,7 +605,13 @@ export default function AdminDashboardPage() {
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => deleteProduct(product.id)}
+                            onClick={async () => {
+                              try {
+                                await deleteProduct(product.id)
+                              } catch {
+                                setImageError('Could not delete product. Please try again.')
+                              }
+                            }}
                             className="p-2 hover:bg-destructive/10 rounded-lg text-destructive transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />

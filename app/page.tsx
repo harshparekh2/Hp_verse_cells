@@ -7,9 +7,15 @@ import { useProductStore } from '@/store/productStore'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { Hero3D } from '@/components/Hero3D'
+import { useEffect } from 'react'
 
 export default function Home() {
   const products = useProductStore((state) => state.products)
+  const loadProducts = useProductStore((state) => state.loadProducts)
+
+  useEffect(() => {
+    loadProducts()
+  }, [loadProducts])
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

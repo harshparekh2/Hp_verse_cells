@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { useProductStore } from '@/store/productStore'
 import { useCartStore } from '@/store/cartStore'
-import { useState, use } from 'react'
+import { useState, use, useEffect } from 'react'
 import { Star, ShoppingCart, Heart, Share2, Check, ShieldCheck, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -17,6 +17,7 @@ interface ProductDetailPageProps {
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { id } = use(params)
   const products = useProductStore((state) => state.products)
+  const loadProducts = useProductStore((state) => state.loadProducts)
   const product = products.find((p) => p.id === id)
   const addItem = useCartStore((state) => state.addItem)
   const [quantity, setQuantity] = useState(1)
@@ -24,6 +25,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [activeImage, setActiveImage] = useState(0)
   const availableQty = Number(product?.stockQuantity ?? (product?.inStock ? 1 : 0))
   const isOutOfStock = availableQty <= 0
+
+  useEffect(() => {
+    loadProducts()
+  }, [loadProducts])
 
   if (!product) {
     return (
@@ -53,7 +58,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     setTimeout(() => setIsAdded(false), 2000)
   }
 
-  const images = product.images.length > 0 ? product.images : ['/icon.svg']
+  const images = product.images.length > 0 ? product.images : ['/assets/icons/icon.svg']
   const isDataUrl = (src: string) =>
     src.startsWith('data:image/') || src.endsWith('.svg')
 

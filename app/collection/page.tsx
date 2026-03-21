@@ -4,16 +4,21 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { ProductCard } from '@/components/ProductCard'
 import { useProductStore } from '@/store/productStore'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Filter } from 'lucide-react'
 
 export default function CollectionPage() {
   const products = useProductStore((state) => state.products)
+  const loadProducts = useProductStore((state) => state.loadProducts)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<string>('Featured')
   const [showFilters, setShowFilters] = useState(false)
+
+  useEffect(() => {
+    loadProducts()
+  }, [loadProducts])
 
   const categories = ['All', 'flagship', 'mid-range', 'budget']
   const brands = Array.from(new Set(products.map(p => p.brand)))

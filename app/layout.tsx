@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   description: 'Discover premium smartphones with expert consultation and white-glove service at HP Verse',
   generator: 'v0.app',
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-icon.png',
+    icon: '/assets/icons/favicon.ico',
+    apple: '/assets/icons/apple-icon.png',
   },
 }
 

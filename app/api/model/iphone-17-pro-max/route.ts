@@ -3,7 +3,7 @@ import path from 'node:path'
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), 'iphone_17_pro_max.glb')
+    const filePath = path.join(process.cwd(), 'public', 'assets', 'models', 'iphone_17_pro_max.glb')
     const file = await fs.readFile(filePath)
 
     return new Response(file, {
