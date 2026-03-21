@@ -102,13 +102,6 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="border-t border-border pt-4">
-            <p className="text-xs text-muted-foreground text-center mb-3">Demo Credentials</p>
-            <div className="space-y-1 text-xs text-muted-foreground">
-              <p>Email: <span className="text-foreground font-mono">admin@hpverse.com</span></p>
-              <p>Password: <span className="text-foreground font-mono">admin123</span></p>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
