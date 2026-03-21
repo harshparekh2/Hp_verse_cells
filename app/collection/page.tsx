@@ -166,14 +166,14 @@ export default function CollectionPage() {
 
               {/* Products Grid */}
               <div className="flex-1">
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <p className="text-sm text-muted-foreground">
                     Showing {filteredProducts.length} products
                   </p>
                   <select 
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full sm:w-auto px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   >
                     <option>Sort by: Featured</option>
                     <option>Price: Low to High</option>

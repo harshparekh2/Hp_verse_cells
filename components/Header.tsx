@@ -12,10 +12,10 @@ export function Header() {
   return (
     <header className="bg-background border-b border-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <h1 className="text-2xl font-serif font-bold text-foreground tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-foreground tracking-tight">
               HP Verse
             </h1>
           </Link>
@@ -51,9 +51,9 @@ export function Header() {
           {/* Cart Icon */}
           <div className="flex items-center gap-4">
             <Link href="/cart" className="relative">
-              <ShoppingCart className="w-6 h-6 text-foreground hover:text-accent transition-colors" />
+              <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-foreground hover:text-accent transition-colors" />
               {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-[10px] sm:text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {itemCount}
                 </span>
               )}

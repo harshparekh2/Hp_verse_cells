@@ -69,7 +69,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       <main className="flex-1">
         {/* Breadcrumb */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground overflow-x-auto whitespace-nowrap">
             <Link href="/" className="hover:text-foreground">Home</Link>
             <span>/</span>
             <Link href="/collection" className="hover:text-foreground">Collection</Link>
@@ -242,11 +242,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   </div>
 
                   {/* Add to Cart */}
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap sm:flex-nowrap gap-3">
                     <button
                       onClick={handleAddToCart}
                       disabled={isOutOfStock}
-                      className={`flex-1 px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 transition-all ${
+                      className={`flex-1 min-w-[220px] sm:min-w-0 px-6 sm:px-8 py-4 rounded-lg font-semibold text-base sm:text-lg flex items-center justify-center gap-2 transition-all ${
                         isOutOfStock
                           ? 'bg-muted text-muted-foreground cursor-not-allowed'
                           : isAdded
@@ -268,10 +268,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                         </>
                       )}
                     </button>
-                    <button className="px-6 py-4 border border-border rounded-lg hover:bg-muted transition-colors">
+                    <button className="px-4 sm:px-6 py-4 border border-border rounded-lg hover:bg-muted transition-colors">
                       <Heart className="w-5 h-5 text-foreground" />
                     </button>
-                    <button className="px-6 py-4 border border-border rounded-lg hover:bg-muted transition-colors">
+                    <button className="px-4 sm:px-6 py-4 border border-border rounded-lg hover:bg-muted transition-colors">
                       <Share2 className="w-5 h-5 text-foreground" />
                     </button>
                   </div>

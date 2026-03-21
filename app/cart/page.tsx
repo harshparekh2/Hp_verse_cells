@@ -54,7 +54,7 @@ export default function CartPage() {
       <main className="flex-1">
         {/* Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-b border-border">
-          <h1 className="text-4xl font-serif font-bold text-foreground">Shopping Cart</h1>
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-foreground">Shopping Cart</h1>
           <p className="text-muted-foreground mt-2">{items.length} item{items.length !== 1 ? 's' : ''} in your cart</p>
         </div>
 
@@ -66,7 +66,7 @@ export default function CartPage() {
               {items.map((item) => (
                 <div
                   key={item.product.id}
-                  className="flex gap-4 sm:gap-6 p-4 sm:p-6 border border-border rounded-lg hover:shadow-lg transition-shadow"
+                  className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 border border-border rounded-lg hover:shadow-lg transition-shadow"
                 >
                   {/* Product Image */}
                   <div className="w-24 h-24 sm:w-32 sm:h-32 bg-muted rounded-lg flex-shrink-0 relative overflow-hidden">
@@ -100,7 +100,7 @@ export default function CartPage() {
                     </p>
 
                     {/* Quantity Controls */}
-                    <div className="flex items-center gap-4 mt-4">
+                    <div className="flex items-center gap-3 sm:gap-4 mt-4 flex-wrap">
                       <div className="flex items-center border border-border rounded-lg w-fit">
                         <button
                           onClick={() => updateQuantity(item.product.id, Math.max(1, item.quantity - 1))}
@@ -126,7 +126,7 @@ export default function CartPage() {
                       )}
                       <button
                         onClick={() => removeItem(item.product.id)}
-                        className="ml-auto p-2 hover:bg-destructive/10 rounded-lg text-destructive transition-colors"
+                        className="sm:ml-auto p-2 hover:bg-destructive/10 rounded-lg text-destructive transition-colors"
                         aria-label="Remove item"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -135,7 +135,7 @@ export default function CartPage() {
                   </div>
 
                   {/* Subtotal */}
-                  <div className="text-right flex flex-col justify-between">
+                  <div className="text-left sm:text-right flex flex-col justify-between sm:min-w-[130px]">
                     <p className="text-sm text-muted-foreground">Subtotal</p>
                     <p className="text-xl font-serif font-bold text-foreground">
                       {formatINR(item.product.price * item.quantity)}
@@ -147,7 +147,7 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-muted/30 border border-border rounded-lg p-6 sticky top-24 space-y-6">
+              <div className="bg-muted/30 border border-border rounded-lg p-4 sm:p-6 sticky top-24 space-y-6">
                 <h2 className="text-xl font-serif font-bold text-foreground">Order Summary</h2>
 
                 <div className="space-y-3 border-b border-border pb-4">
@@ -167,7 +167,7 @@ export default function CartPage() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-bold text-foreground">Total</span>
-                  <span className="text-3xl font-serif font-bold text-foreground">
+                  <span className="text-2xl sm:text-3xl font-serif font-bold text-foreground">
                     {formatINR(getTotal() + Math.round(getTotal() * 0.12))}
                   </span>
                 </div>

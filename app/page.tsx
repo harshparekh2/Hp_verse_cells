@@ -32,7 +32,7 @@ export default function Home() {
                   <p className="text-sm uppercase tracking-widest text-accent font-semibold mb-4">
                     Premium Smartphones
                   </p>
-                  <h1 className="text-5xl md:text-6xl font-serif font-bold text-foreground leading-tight text-balance">
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-foreground leading-tight text-balance">
                     Discover Luxury in Every Device
                   </h1>
                 </div>

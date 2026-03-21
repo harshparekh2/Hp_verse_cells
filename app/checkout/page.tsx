@@ -124,19 +124,19 @@ export default function CheckoutPage() {
       <Header />
 
       <main className="flex-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Checkout */}
             <div className="lg:col-span-2">
               {/* Progress Steps */}
               <div className="mb-8">
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-8">
                   {[
                     { label: 'Shipping', id: 'shipping' as const },
                     { label: 'Payment', id: 'payment' as const },
                     { label: 'Confirmation', id: 'confirmation' as const }
                   ].map((s, index) => (
-                    <div key={s.id} className="flex items-center gap-4 flex-1">
+                    <div key={s.id} className="flex items-center gap-2 sm:gap-4 min-w-[120px] flex-1">
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
                           step === s.id || (s.id === 'confirmation' && step === 'confirmation')
@@ -148,7 +148,7 @@ export default function CheckoutPage() {
                       >
                         {(s.id === 'shipping' || s.id === 'payment') && (step === s.id) ? index + 1 : (step !== 'shipping' && step !== 'payment') ? <Check className="w-5 h-5" /> : index + 1}
                       </div>
-                      <span className="text-sm font-semibold text-foreground">{s.label}</span>
+                      <span className="text-xs sm:text-sm font-semibold text-foreground">{s.label}</span>
                       {index < 2 && <div className="flex-1 h-1 bg-border" />}
                     </div>
                   ))}
@@ -167,14 +167,14 @@ export default function CheckoutPage() {
                     <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Shipping Information</h2>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
                       type="text"
                       name="firstName"
                       placeholder="First Name"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="col-span-1 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     />
                     <input
@@ -183,19 +183,19 @@ export default function CheckoutPage() {
                       placeholder="Last Name"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="col-span-1 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
                       type="email"
                       name="email"
                       placeholder="Email Address"
                       value={formData.email}
                       onChange={handleChange}
-                      className="col-span-1 sm:col-span-2 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="sm:col-span-2 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     />
                     <input
@@ -204,7 +204,7 @@ export default function CheckoutPage() {
                       placeholder="Phone Number"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="col-span-1 sm:col-span-2 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="sm:col-span-2 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     />
                   </div>
@@ -219,21 +219,21 @@ export default function CheckoutPage() {
                     required
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
                       type="text"
                       name="city"
                       placeholder="City"
                       value={formData.city}
                       onChange={handleChange}
-                      className="col-span-1 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     />
                     <select
                       name="state"
                       value={formData.state}
                       onChange={handleChange}
-                      className="col-span-1 px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                     >
                       {INDIAN_STATES.map(state => (
@@ -242,14 +242,14 @@ export default function CheckoutPage() {
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
                       type="text"
                       name="zip"
                       placeholder="Pincode"
                       value={formData.zip}
                       onChange={handleChange}
-                      className="col-span-1 px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      className="px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       required
                       pattern="[0-9]{6}"
                     />
@@ -258,7 +258,7 @@ export default function CheckoutPage() {
                       name="country"
                       value="India"
                       disabled
-                      className="col-span-1 px-4 py-3 border border-border rounded-lg bg-muted text-muted-foreground"
+                      className="px-4 py-3 border border-border rounded-lg bg-muted text-muted-foreground"
                     />
                   </div>
 
@@ -321,7 +321,7 @@ export default function CheckoutPage() {
                     All transactions are secured and encrypted for the Indian market
                   </div>
 
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <button
                       type="button"
                       onClick={() => setStep('shipping')}
@@ -382,7 +382,7 @@ export default function CheckoutPage() {
 
             {/* Order Summary Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-muted/30 border border-border rounded-lg p-6 sticky top-24 space-y-6">
+              <div className="bg-muted/30 border border-border rounded-lg p-4 sm:p-6 sticky top-24 space-y-6">
                 <h2 className="text-xl font-serif font-bold text-foreground">Order Summary</h2>
 
                 <div className="space-y-3 max-h-96 overflow-y-auto">
