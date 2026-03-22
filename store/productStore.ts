@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { Product, seedProducts } from '@/lib/productsSeed'
 
+export type { Product } from '@/lib/productsSeed'
+
 interface ProductStore {
   products: Product[]
   isLoading: boolean

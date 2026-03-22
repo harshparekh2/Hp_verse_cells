@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Chatbot } from '@/components/Chatbot'
+import { CartCatalogSync } from '@/components/CartCatalogSync'
 import './globals.css'
 
 const geist = Geist({ subsets: ["latin"], variable: '--font-sans' });
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased bg-background text-foreground">
+        <CartCatalogSync />
         {children}
         <Chatbot />
         <Analytics />

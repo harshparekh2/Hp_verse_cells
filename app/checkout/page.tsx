@@ -19,10 +19,12 @@ const INDIAN_STATES = [
 ]
 
 export default function CheckoutPage() {
-  const { items, getTotal, clearCart } = useCartStore()
+  const { items, getTotal, clearCart, syncItemsWithCatalog } = useCartStore()
   const { addOrder } = useOrderStore()
-  const { products, setProducts } = useProductStore()
+  const { products, loadProducts, updateProduct } = useProductStore()
   const [step, setStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping')
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
+  const [orderError, setOrderError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     // Shipping
     firstName: '',
@@ -39,7 +41,7 @@ export default function CheckoutPage() {
   })
   const hasUnavailableItems = items.some((item) => {
     const latest = products.find((p) => p.id === item.product.id)
-    const qty = Number(latest?.stockQuantity ?? (latest?.inStock ? 1 : 0))
+    const qty = Math.max(0, Math.floor(Number(latest?.stockQuantity ?? (latest?.inStock ? 1 : 0))))
     return qty <= 0 || item.quantity > qty
   })
 
@@ -54,43 +56,90 @@ export default function CheckoutPage() {
     setStep('payment')
   }
 
-  const handlePaymentSubmit = (e: React.FormEvent) => {
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setOrderError(null)
     if (hasUnavailableItems) return
-    
-    const totalAmount = getTotal() + Math.round(getTotal() * 0.12)
-    
-    // Create the order
-    addOrder({
-      customerName: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      phone: formData.phone,
-      address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.zip}, ${formData.country}`,
-      city: formData.city,
-      state: formData.state,
-      zip: formData.zip,
-      country: formData.country,
-      paymentMethod: formData.paymentMethod,
-      items: [...items],
-      total: totalAmount
-    })
 
-    // Decrease inventory based on ordered quantity
-    const updatedProducts = products.map((product) => {
-      const orderedItem = items.find((item) => item.product.id === product.id)
-      if (!orderedItem) return product
-      const currentQty = Number(product.stockQuantity ?? (product.inStock ? 1 : 0))
-      const nextQty = Math.max(0, currentQty - orderedItem.quantity)
-      return {
-        ...product,
-        stockQuantity: nextQty,
-        inStock: nextQty > 0,
+    setIsPlacingOrder(true)
+    try {
+      await loadProducts()
+      syncItemsWithCatalog(useProductStore.getState().products)
+
+      const lineItems = useCartStore.getState().items
+      if (lineItems.length === 0) {
+        setOrderError('Your cart was updated because stock changed. Please review and try again.')
+        return
       }
-    })
-    setProducts(updatedProducts)
 
-    setStep('confirmation')
-    clearCart()
+      for (const line of lineItems) {
+        await loadProducts()
+        const latest = useProductStore.getState().products.find((p) => p.id === line.product.id)
+        const currentQty = Math.max(
+          0,
+          Math.floor(Number(latest?.stockQuantity ?? (latest?.inStock ? 1 : 0)))
+        )
+        if (!latest || currentQty < line.quantity) {
+          setOrderError(
+            'Not enough stock for one or more items. Your cart was updated — please review and try again.'
+          )
+          await loadProducts()
+          syncItemsWithCatalog(useProductStore.getState().products)
+          return
+        }
+      }
+
+      const totalAmount =
+        useCartStore.getState().getTotal() + Math.round(useCartStore.getState().getTotal() * 0.12)
+      const snapshotItems = [...useCartStore.getState().items]
+
+      for (const line of snapshotItems) {
+        await loadProducts()
+        const latest = useProductStore.getState().products.find((p) => p.id === line.product.id)
+        const currentQty = Math.max(
+          0,
+          Math.floor(Number(latest?.stockQuantity ?? (latest?.inStock ? 1 : 0)))
+        )
+        if (!latest || currentQty < line.quantity) {
+          setOrderError('Stock changed while completing your order. Please review your cart and try again.')
+          await loadProducts()
+          syncItemsWithCatalog(useProductStore.getState().products)
+          return
+        }
+        const nextQty = Math.max(0, currentQty - line.quantity)
+        await updateProduct(line.product.id, {
+          stockQuantity: nextQty,
+          inStock: nextQty > 0,
+        })
+      }
+
+      await loadProducts()
+      const catalog = useProductStore.getState().products
+
+      addOrder({
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.zip}, ${formData.country}`,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        country: formData.country,
+        paymentMethod: formData.paymentMethod,
+        items: snapshotItems.map((line) => {
+          const fresh = catalog.find((p) => p.id === line.product.id) ?? line.product
+          return { ...line, product: fresh }
+        }),
+        total: totalAmount,
+      })
+
+      clearCart()
+      setStep('confirmation')
+    } catch {
+      setOrderError('Could not complete order. Please try again.')
+    } finally {
+      setIsPlacingOrder(false)
+    }
   }
 
   const handleOrderConfirm = () => {
@@ -279,6 +328,12 @@ export default function CheckoutPage() {
                     <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Payment Method</h2>
                   </div>
 
+                  {orderError && (
+                    <div className="p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm font-semibold">
+                      {orderError}
+                    </div>
+                  )}
+
                   <div className="space-y-4">
                     {[
                       { id: 'UPI', label: 'UPI (GPay, PhonePe, Paytm)', icon: Smartphone },
@@ -331,10 +386,10 @@ export default function CheckoutPage() {
                     </button>
                     <button
                       type="submit"
-                      disabled={hasUnavailableItems}
-                      className="flex-1 px-6 py-3 bg-foreground text-background font-semibold rounded-lg hover:bg-foreground/90 transition-colors"
+                      disabled={hasUnavailableItems || isPlacingOrder}
+                      className="flex-1 px-6 py-3 bg-foreground text-background font-semibold rounded-lg hover:bg-foreground/90 transition-colors disabled:opacity-60 disabled:pointer-events-none"
                     >
-                      Complete Order
+                      {isPlacingOrder ? 'Placing order…' : 'Complete Order'}
                     </button>
                   </div>
                 </form>

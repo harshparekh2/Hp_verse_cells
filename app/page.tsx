@@ -23,7 +23,7 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-16 sm:py-24 lg:py-32 border-b border-border">
+        <section className="pt-8 sm:pt-10 lg:pt-12 pb-14 sm:pb-20 lg:pb-24 border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               {/* Left Content */}

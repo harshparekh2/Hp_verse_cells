@@ -128,13 +128,13 @@
       "Creator-grade video tools"
     ],
     "description": "Cinema-inspired flagship for creators who want manual camera control",
-    "inStock": true,
+    "inStock": false,
     "condition": "Like New",
     "category": "flagship",
     "color": "Khaki Green",
     "year": "2024",
     "storage": "256GB",
     "ram": "12GB",
-    "stockQuantity": 2
+    "stockQuantity": 0
   }
 ]
